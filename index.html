@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Occupancy-Based Dual Contouring is a dual contouring method that is designed for neural implicit functions defined in continuous 3D space.">
+  <!-- <meta name="keywords" content="Nerfies, D-NeRF, NeRF"> -->
+  <meta name="keywords" content="Occupancy-Based Dual Contouring, ODC, Dual Contouring, Marching Cubes">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Occupancy-Based Dual Contouring</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/icon_star.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+<head>
+  <title>Title Table</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px auto;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #ffffff;
+      padding: 2px;
+      vertical-align: middle;
+      text-align: center;
+      word-wrap: break-word;
+      align-items: center;
+    }
+    th {
+      background-color: rgba(0, 0, 0, 0)
+    }
+  </style>
+</head>
+
+<head>
+  <head>
+    <title>Using Courgette Font</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <style>
+      .courgette-font {
+        font-family: 'Courgette', cursive;
+      }
+    </style>
+  </head>
+</head>
+
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Occupancy-Based Dual Contouring</h1>
+          <div class="is-size-4 publication-authors">
+						<span class="author-block">SIGGRAPH Asia 2024</span>
+					</div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              Jisung Hwang and</span>
+            <span class="author-block">
+              <a href="https://mhsung.github.io/">Minhyuk Sung</a></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">KAIST</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2409.13418"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- ArXiv Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2409.13418"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/KAIST-Visual-AI-Group/ODC"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Bibtex -->
+              <span class="link-block">
+								<btn class="button is-normal is-rounded is-dark">
+									<span class="file-icon">
+										<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#ffffff}</style><path d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>
+									</span>
+									<span id="bibtex-link">Bibtex</span>
+								</btn>
+							</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <p style="text-align: center;">
+        <img src="./static/images/teaser.png"/>
+      </p>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Occupancy-based Dual Contouring</span> extracts meshes from <em>neural implicit functions</em><br>
+        defined in <em>continuous 3D space</em> such as <a href="https://github.com/czq142857/IM-NET">IM-NET</a>, <a href="https://github.com/autonomousvision/occupancy_networks">Occupancy Networks</a>, or <a href="https://github.com/facebookresearch/DeepSDF">DeepSDF</a>.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser video">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser-video" controls playsinline height="100%">
+        <source src="./static/videos/teaser.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Results -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-4">No Training</a></h2>
+        <h2 class="title is-4">High Fidelity</a></h2>
+        <h2 class="title is-4">Fully Parallelizable</a></h2>
+        <h2 class="title is-4">Preserves Sharpness</a></h2>
+        <h2 class="title is-4">No Gradient Information Required</a></h2>
+        <h2 class="title is-4">Works for Occupancy Fields and SDFs</a></h2>
+        <br>
+        <span style="font-size: 35px;"><p class="courgette-font">Let's reveal the true shapes that a generative model make!</p></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We introduce a dual contouring method that provides state-of-the-art performance
+            for occupancy functions while achieving computation times of a few seconds.
+            Our method is learning-free and carefully designed to maximize the use of GPU parallelization.
+          </p>
+          <p>
+            The recent surge of implicit neural representations has led to significant attention to occupancy fields,
+            resulting in a wide range of 3D reconstruction and generation methods based on them.
+            However, the outputs of such methods have been underestimated due to
+            the bottleneck in converting the resulting occupancy function to a mesh.
+            Marching Cubes tends to produce staircase-like artifacts, and
+            most subsequent works focusing on exploiting signed distance functions as input also
+            yield suboptimal results for occupancy functions.
+          </p>
+          <p>
+            Based on Manifold Dual Contouring (MDC), we propose <span class="dnerf">Occupancy-based Dual Contouring</span>(ODC),
+            which mainly modifies the computation of grid edge points (1D points) and
+            grid cell points (3D points) to not use any distance information. We introduce
+            auxiliary 2D points that are used to compute local surface normals along
+            with the 1D points, helping identify 3D points via the quadric error function.
+            To search the 1D, 2D, and 3D points, we develop fast algorithms that are
+            parallelizable across all grid edges, faces, and cells. Our experiments with
+            several 3D neural generative models and a 3D mesh dataset demonstrate
+            that our method achieves the best fidelity compared to prior works.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Method -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Method</h2>
+        <p>
+          ODC <b>maximally leverages continuous implicit functions</b> to extract highly accurate surfaces, <b>fully parallelizable</b> on GPUs.<br>
+          The method consists of five steps: Grid Sampling, 1D point search, 2D point search, 3D point identification, and polygonization.
+        </p>
+        <figure class="image is-centered">
+          <img src="./static/images/Overview1.png" alt="Overview1 image">
+        </figure>
+        <div class="content is-centered has-text-centered">
+          <p>
+            1D point search identifies surface intersections along grid edges using binary search.<br>
+            Then, sharp features (2D points) are detected on grid-aligned planes as accurately as possible using our 2D point search.
+          </p>
+        </div>
+        <figure class="image is-centered">
+          <img src="./static/images/2D_search.png" alt="2D search image">
+        </figure>
+        <div class="content is-centered has-text-centered">
+          <p>
+            2D point search correctly detects the sharp feature \(p_f\) by doing three line-binary searches, as shown in the figure above.<br>
+            For further details, please refer to our paper.
+          </p>
+        </div>
+        <figure class="image is-centered">
+          <img src="./static/images/Overview2.png" alt="Overview2 image">
+        </figure>
+        <div class="content is-centered has-text-centered">
+          <p>
+            Unlike traditional methods like Manifold Dual Contouring,<br>
+            <b>Our method DO NOT require gradient information</b> from the input implicit function.<br>
+            We solve the Quadric Error Function (QEF) using only 1D and 2D points obtained in the previous steps,<br>
+            and then perform polygonization following the Manifold Dual Contouring approach.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Method -->
+
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Results -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Results with <a href="https://salad3d.github.io/">SALAD (generative model)</a></h2>
+        <table>
+          <tr>
+            <th style = "vertical-align: middle"><a href="https://scikit-image.org/docs/stable/api/skimage.measure.html#skimage.measure.marching_cubes">Marching Cubes</a></th>
+            <th style = "vertical-align: middle"><a href="https://www.cse.wustl.edu/~taoju/research/interfree_paper_final.pdf">Inters.-free Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/nv-tlabs/FlexiCubes/blob/main/flexicubes.py">Manif. Dual Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/pmneila/PyMCubes/blob/master/mcubes/smoothing.py">Lempitsky's method</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/czq142857/NDC">Neural Dual Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://people.engr.tamu.edu/schaefer/research/indicator_contour.pdf">Contouring DIF</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/autonomousvision/occupancy_networks/tree/master/im2mesh/utils">MISE</a></th>
+            <th style = "vertical-align: middle"><b>ODC (Ours)</b></th>
+          </tr>
+        </table>
+        <figure class="image is-centered">
+          <img src="./static/images/SALAD/airplane_0007.png" alt="salad1">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/SALAD/airplane_0012_main.png" alt="salad2">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/SALAD/chair_0001.png" alt="salad3">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/SALAD/chair_0003_main.png" alt="salad4">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/SALAD/table_0004.png" alt="salad5">
+        </figure>
+      </div>
+    </div>
+    <!--/ Results -->
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Results -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Results with <a href="https://github.com/facebookresearch/DeepSDF">DeepSDF</a></h2>
+        <table>
+          <tr>
+            <th style = "vertical-align: middle"><a href="https://scikit-image.org/docs/stable/api/skimage.measure.html#skimage.measure.marching_cubes">Marching Cubes</a></th>
+            <th style = "vertical-align: middle"><a href="https://www.cse.wustl.edu/~taoju/research/interfree_paper_final.pdf">Inters.-free Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/nv-tlabs/FlexiCubes/blob/main/flexicubes.py">Manif. Dual Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/pmneila/PyMCubes/blob/master/mcubes/smoothing.py">Lempitsky's method</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/czq142857/NDC">Neural Dual Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://people.engr.tamu.edu/schaefer/research/indicator_contour.pdf">Contouring DIF</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/autonomousvision/occupancy_networks/tree/master/im2mesh/utils">MISE</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/nissmar/PoNQ">PoNQ</a></th>
+            <th style = "vertical-align: middle"><b>ODC (Ours)</b></th>
+          </tr>
+        </table>
+        <figure class="image is-centered">
+          <img src="./static/images/DeepSDF/ABC_0000.png" alt="deepsdf1">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/DeepSDF/ABC_0001.png" alt="deepsdf2">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/DeepSDF/ABC_0004.png" alt="deepsdf3">
+        </figure>
+      </div>
+    </div>
+    <!--/ Results -->
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Results -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Results with <a href="https://dl.acm.org/doi/10.1145/2601097.2601154">Myles et al.'s Dataset</a></h2>
+        <table>
+          <tr>
+            <th style = "vertical-align: middle"><a href="https://scikit-image.org/docs/stable/api/skimage.measure.html#skimage.measure.marching_cubes">Marching Cubes</a></th>
+            <th style = "vertical-align: middle"><a href="https://www.cse.wustl.edu/~taoju/research/interfree_paper_final.pdf">Inters.-free Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/nv-tlabs/FlexiCubes/blob/main/flexicubes.py">Manif. Dual Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/pmneila/PyMCubes/blob/master/mcubes/smoothing.py">Lempitsky's method</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/czq142857/NDC">Neural Dual Contouring</a></th>
+            <th style = "vertical-align: middle"><a href="https://people.engr.tamu.edu/schaefer/research/indicator_contour.pdf">Contouring DIF</a></th>
+            <th style = "vertical-align: middle"><a href="https://github.com/autonomousvision/occupancy_networks/tree/master/im2mesh/utils">MISE</a></th>
+            <th style = "vertical-align: middle"><b>ODC (Ours)</b></th>
+            <th style = "vertical-align: middle"><b>GT</b></th>
+          </tr>
+        </table>
+        <figure class="image is-centered">
+          <img src="./static/images/Myles/OCC_bozbezbozzel100K.png" alt="myles1">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/Myles/OCC_buste.png" alt="myles2">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/Myles/OCC_casting_refined_main.png" alt="myles3">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/Myles/OCC_filigree100k.png" alt="myles3">
+        </figure>
+        <figure class="image is-centered">
+          <img src="./static/images/Myles/OCC_grayloc.png" alt="myles3">
+        </figure>
+      </div>
+    </div>
+    <!--/ Results -->
+  </div>
+</section>
+
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code id="bibcontent">@inproceedings{hwang2024odc,
+  title = {Occupancy-Based Dual Contouring},
+  author = {Hwang, Jisung and Sung, Minhyuk},
+  booktitle = {SIGGRAPH Asia 2024 Conference Papers},
+  year = {2024}
+}</code></pre>
+  </div>
+</section>
+
+<script>
+	document.getElementById("bibtex-link").onclick = function (e) {
+		bibtxt = document.getElementById("bibcontent");
+		navigator.clipboard.writeText(bibtxt.textContent);
+
+		bibLink = e.srcElement;
+		bibLink.textContent = "✓ Copied";
+	};
+	document.getElementById("bibtex-link").onmouseover = function (e) {
+		bibLink = e.srcElement;
+		bibLink.textContent = "Copy";
+	};
+	document.getElementById("bibtex-link").onmouseout = function (e) {
+		bibLink = e.fromElement;
+		bibLink.textContent = "Bibtex";
+	};
+</script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            The website is based on <a
+              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. We thank Keunhong Park for kindly open-sourcing the source code.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
